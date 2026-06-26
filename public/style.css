@@ -4,10 +4,13 @@
   --bg-inset: #0e1116;
   --surface: #161a22;
   --surface-hover: #1a1f28;
-  --border: rgba(228, 232, 240, 0.08);
+  --border: #1e2d4a;
   --border-strong: rgba(228, 232, 240, 0.14);
   --text: #e8ebf2;
-  --text-secondary: #a8b0c0;
+  --text-primary: #e8eaf0;
+  --text-secondary: #8892a4;
+  --text-muted: #4a5568;
+  --surface-1: #0f1629;
   --muted: #6e7788;
   --accent: #4a6cf7;
   --accent-soft: rgba(74, 108, 247, 0.12);
@@ -131,7 +134,7 @@ body {
 /* Panels */
 .panel {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.03);
   transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
@@ -143,7 +146,7 @@ body {
 
 .panel-inset {
   background: var(--bg-inset);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   border-radius: var(--radius-md);
   padding: 20px 22px;
 }
@@ -162,7 +165,7 @@ body {
   margin-bottom: 36px;
   flex-wrap: wrap;
   padding-bottom: 24px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #1e2d4a;
 }
 
 .header-left {
@@ -178,7 +181,7 @@ body {
   place-items: center;
   color: var(--accent-muted);
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   border-radius: var(--radius-md);
 }
 
@@ -217,7 +220,7 @@ body {
   font-size: 0.8125rem;
   font-weight: 500;
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
 }
 
 .status-dot {
@@ -293,7 +296,7 @@ body {
 }
 
 .hero-lead {
-  color: var(--text-secondary);
+  color: #8892a4;
   max-width: 42ch;
   font-size: 1rem;
   font-weight: 400;
@@ -343,7 +346,7 @@ body {
   max-width: 520px;
   padding: 11px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   background: var(--bg-inset);
   color: var(--text);
   font-family: var(--mono);
@@ -463,7 +466,7 @@ body {
   padding: 11px 12px;
   border-radius: var(--radius-sm);
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
 }
 
@@ -591,7 +594,7 @@ body {
   padding: 16px 18px;
   border-radius: var(--radius-md);
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   transition: border-color 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
   animation: stepIn 0.45s var(--ease) backwards;
 }
@@ -659,7 +662,7 @@ body {
 .step-tool {
   font-family: var(--mono);
   font-size: 0.6875rem;
-  color: var(--text-secondary);
+  color: #8892a4;
   word-break: break-all;
   line-height: 1.45;
 }
@@ -697,7 +700,7 @@ body {
   padding: 20px 22px 22px;
   border-radius: var(--radius-md);
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   position: relative;
   overflow: hidden;
   transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
@@ -844,7 +847,7 @@ body {
   padding: 10px 12px;
   background: var(--bg-inset);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   transition: background 0.2s var(--ease);
 }
 
@@ -871,8 +874,8 @@ body {
   height: 100%;
 }
 .lev-card {
-  background: var(--surface-1, #0f1629);
-  border: 0.5px solid var(--border);
+  background: #0f1629;
+  border: 0.5px solid #1e2d4a;
   border-radius: 6px;
   padding: 8px 10px;
   display: flex;
@@ -881,14 +884,14 @@ body {
 }
 .lev-label {
   font-size: 9px;
-  color: var(--text-muted);
+  color: #4a5568;
   text-transform: uppercase;
   letter-spacing: .04em;
 }
 .lev-val {
   font-size: 14px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #e8eaf0;
   font-family: var(--font-mono, monospace);
   margin-top: 4px;
 }
@@ -911,8 +914,8 @@ body {
 
 .btn-ghost {
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
+  border: 1px solid #1e2d4a;
+  color: #8892a4;
   font-family: var(--mono);
   font-size: 0.6875rem;
   font-weight: 500;
@@ -962,7 +965,7 @@ body {
   padding: 13px 15px;
   background: var(--bg-inset);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   transition: border-color 0.2s var(--ease);
 }
 
@@ -1033,7 +1036,7 @@ body {
   padding: 13px 15px;
   background: var(--bg-inset);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   font-size: 0.875rem;
   line-height: 1.5;
   transition: border-color 0.2s var(--ease);
@@ -1123,20 +1126,20 @@ body {
   gap: 6px;
   font-size: 11px;
   line-height: 1.4;
-  color: var(--text-secondary);
+  color: #8892a4;
 }
 .news-idx {
   font-size: 9px;
-  color: var(--text-muted);
+  color: #4a5568;
   min-width: 14px;
   padding-top: 1px;
 }
 .news-feed-item a {
-  color: var(--text-secondary);
+  color: #8892a4;
   text-decoration: none;
 }
 .news-feed-item a:hover {
-  color: var(--text-primary);
+  color: #e8eaf0;
 }
 
 .narrative-grid {
@@ -1149,7 +1152,7 @@ body {
   padding: 16px 18px;
   background: var(--bg-inset);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
 }
 
@@ -1185,7 +1188,7 @@ body {
   text-align: center;
   font-size: 0.875rem;
   color: var(--muted);
-  border: 1px dashed var(--border);
+  border: 1px dashed #1e2d4a;
   border-radius: var(--radius-md);
   background: var(--bg-inset);
 }
@@ -1269,7 +1272,7 @@ body {
   font-size: 0.75rem;
   color: var(--muted);
   text-align: center;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid #1e2d4a;
 }
 
 .competition-aside .mono {
@@ -1285,7 +1288,7 @@ body {
 }
 
 .footer a {
-  color: var(--text-secondary);
+  color: #8892a4;
   text-decoration: none;
   transition: color 0.2s var(--ease);
 }
@@ -1326,7 +1329,7 @@ body {
   color: var(--muted);
   opacity: 0.3;
   text-decoration: none;
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   border-radius: var(--radius-sm);
   background: var(--bg-elevated);
   transition: opacity 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
@@ -1334,7 +1337,7 @@ body {
 
 .deerflow-badge:hover {
   opacity: 0.65;
-  color: var(--text-secondary);
+  color: #8892a4;
   border-color: var(--border-strong);
 }
 
@@ -1347,7 +1350,7 @@ body {
 /* Legacy alias */
 .glass {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid #1e2d4a;
   border-radius: var(--radius-lg);
 }
 
