@@ -346,34 +346,108 @@ function generateTraderRead() {
   }
 
   let setup;
-  let setupColor = 'var(--muted)';
   if (fg < 25 && fundingRate < 0 && rsi < 35 && btcCurrentPrice > btcMa200) {
     setup = 'SETUP LONG HAUTE PROBABILITE - confluence de signaux alignés';
-    setupColor = '#16c784';
   } else if (fg > 75 && fundingRate > 0.05 && rsi > 70) {
     setup = 'ZONE DE SUREXTENSION - risque court confirmé, réduire l\'exposition';
-    setupColor = '#ea3943';
   } else if (oiChange < -3 && liq24h > 400) {
     setup = 'POST-LIQUIDATION - marché en digestion, rebond technique possible';
-    setupColor = '#f7931a';
   } else if (btcDominance > 56) {
     setup = 'BTC Season actif - concentrer le capital sur BTC, éviter les alts';
-    setupColor = '#3861fb';
   } else if (btcDominance < 48 && fg > 55) {
     setup = 'Rotation altcoin en cours - sélectivité sur les narratives dominantes';
-    setupColor = '#3861fb';
   } else {
     setup = 'Pas de setup propre aujourd\'hui - réduire la taille ou rester flat';
-    setupColor = 'var(--muted)';
   }
 
-  $('#tr-bias').textContent = bias;
-  $('#tr-sentiment').textContent = sentiment;
-  $('#tr-leverage').textContent = leverage;
-  $('#tr-whale').textContent = whale;
+  const biasEl = $('#tr-bias');
+  biasEl.textContent = bias;
+  if (bias.includes('Bullish') || bias.includes('haussier')) {
+    biasEl.style.color = '#16c784';
+  } else if (bias.includes('baissière')) {
+    biasEl.style.color = '#ea3943';
+  } else {
+    biasEl.style.color = 'var(--text-muted)';
+  }
+
+  const sentimentEl = $('#tr-sentiment');
+  sentimentEl.textContent = sentiment;
+  if (fg < 45) {
+    sentimentEl.style.color = '#16c784';
+  } else if (fg < 60) {
+    sentimentEl.style.color = 'var(--text-muted)';
+  } else if (fg < 80) {
+    sentimentEl.style.color = '#f7931a';
+  } else {
+    sentimentEl.style.color = '#ea3943';
+  }
+
+  const leverageEl = $('#tr-leverage');
+  leverageEl.textContent = leverage;
+  if (leverage.includes('surchargés')) {
+    leverageEl.style.color = '#f7931a';
+  } else if (leverage.includes('surexposés') || leverage.includes('liquidations')) {
+    leverageEl.style.color = '#ea3943';
+  } else if (leverage.includes('neutre')) {
+    leverageEl.style.color = 'var(--text-muted)';
+  } else {
+    leverageEl.style.color = 'var(--text-secondary)';
+  }
+
+  const whaleEl = $('#tr-whale');
+  whaleEl.textContent = whale;
+  if (whale.includes('Accumulation') || whale.includes('HODLer')) {
+    whaleEl.style.color = '#16c784';
+  } else if (whale.includes('sortie')) {
+    whaleEl.style.color = '#ea3943';
+  } else {
+    whaleEl.style.color = 'var(--text-secondary)';
+  }
+
   const setupEl = $('#tr-setup');
   setupEl.textContent = setup;
-  setupEl.style.color = setupColor;
+  setupEl.style.borderRadius = '4px';
+  setupEl.style.padding = '5px 10px';
+  setupEl.style.display = 'inline-block';
+  if (setup.includes('LONG HAUTE PROBABILITE')) {
+    setupEl.style.background = '#0a2a15';
+    setupEl.style.border = '1px solid #16c784';
+    setupEl.style.color = '#16c784';
+  } else if (setup.includes('SUREXTENSION')) {
+    setupEl.style.background = '#2a0a0a';
+    setupEl.style.border = '1px solid #ea3943';
+    setupEl.style.color = '#ea3943';
+  } else if (setup.includes('POST-LIQUIDATION')) {
+    setupEl.style.background = '#2a1200';
+    setupEl.style.border = '1px solid #f7931a';
+    setupEl.style.color = '#f7931a';
+  } else if (setup.includes('BTC Season') || setup.toLowerCase().includes('altcoin')) {
+    setupEl.style.background = '#0a1535';
+    setupEl.style.border = '1px solid #3861fb';
+    setupEl.style.color = '#5b8cff';
+  } else {
+    setupEl.style.background = 'transparent';
+    setupEl.style.border = '1px solid var(--border)';
+    setupEl.style.color = 'var(--text-muted)';
+  }
+}
+
+function levValSignClass(val) {
+  const n = parseNum(val);
+  if (n < 0) return 'negative';
+  if (n > 0) return 'positive';
+  return '';
+}
+
+function fmtFundingLevCard(v) {
+  if (v == null || v === '' || v === '—') return { text: '—', cls: '' };
+  const n = Number(String(v).replace(/[%,+$]/g, ''));
+  if (Number.isNaN(n)) return { text: String(v), cls: '' };
+  const pct = Math.abs(n) <= 1 ? n * 100 : n;
+  return {
+    text: `${pct >= 0 ? '+' : ''}${pct.toFixed(3)}%`,
+    cls: pct < 0 ? 'negative' : pct > 0 ? 'positive' : '',
+  };
 }
 
 function renderLeverage(l) {
@@ -382,12 +456,27 @@ function renderLeverage(l) {
     setSectionError('leverage', 'Could not load leverage metrics.');
     return;
   }
+  const oiChangeCls = levValSignClass(l.oiChange24h);
+  const funding = fmtFundingLevCard(l.funding);
   $('#leverage-chart').innerHTML = `
-    <div class="lev-item"><span>Open Interest</span><span>${l.openInterest}</span></div>
-    <div class="lev-item"><span>OI Change 24h</span><span>${l.oiChange24h || '—'}</span></div>
-    <div class="lev-item"><span>Funding Rate</span><span>${fmtFunding(l.funding)}</span></div>
-    <div class="lev-item"><span>BTC Liq 24h</span><span>${l.liq24h || '—'}</span></div>
-    <div class="lev-item"><span>ETF AUM BTC</span><span>${l.etfBtc || '—'}</span></div>
+    <div class="lev-grid">
+      <div class="lev-card">
+        <div class="lev-label">Open Interest</div>
+        <div class="lev-val">${l.openInterest}</div>
+      </div>
+      <div class="lev-card">
+        <div class="lev-label">OI Change 24h</div>
+        <div class="lev-val ${oiChangeCls}">${l.oiChange24h || '—'}</div>
+      </div>
+      <div class="lev-card">
+        <div class="lev-label">Funding Rate</div>
+        <div class="lev-val ${funding.cls}">${funding.text}</div>
+      </div>
+      <div class="lev-card">
+        <div class="lev-label">BTC Liq 24h</div>
+        <div class="lev-val">${l.liq24h || '—'}</div>
+      </div>
+    </div>
   `;
 }
 
@@ -450,18 +539,26 @@ function renderReport(data) {
     btcCurrentPrice: tr.btcCurrentPrice ?? parseNum(a.btc?.price),
   };
 
-  const newsHtml = (r.btcNews || []).length
-    ? (r.btcNews || []).map((n) => `<a href="${n.url}" target="_blank" rel="noopener">${n.title}</a>`).join(' · ')
+  const btcNews = (r.btcNews || []).slice(0, 5);
+  const newsHtml = btcNews.length
+    ? `<div class="news-feed">${btcNews.map((item, i) => {
+        const url = item.url || item.link;
+        const title = item.title || '—';
+        const titleHtml = url
+          ? `<a href="${url}" target="_blank" rel="noopener"><span class="news-title-text">${title}</span></a>`
+          : `<span class="news-title-text">${title}</span>`;
+        return `<div class="news-feed-item"><span class="news-idx">${i + 1}.</span>${titleHtml}</div>`;
+      }).join('')}</div>`
     : '—';
 
   $('#report-list').innerHTML = `
-    <li><span class="rlabel">Technicals</span><span>RSI(14): ${t.rsi14 || '—'} · MACD: ${t.macdHist || '—'} · Pivot: ${t.pivot || '—'}</span></li>
-    <li><span class="rlabel">BTC Depth</span><span>RSI ${tr.btcRsi ?? '—'} · SMA200 ${tr.btcMa200 ?? '—'} · S ${tr.btcSupport ?? '—'} / R ${tr.btcResistance ?? '—'}</span></li>
-    <li><span class="rlabel">Leverage</span><span>OI ${l.openInterest || '—'} (${l.oiChange24h || '—'}) · Funding ${fmtFunding(l.funding)}</span></li>
-    <li><span class="rlabel">Liquidations</span><span>BTC 24h: ${l.liq24h || '—'}</span></li>
-    <li><span class="rlabel">Holders</span><span>LT ${tr.btcLtHolderPct ?? '—'}% · Whales ${tr.btcWhaleConcentration ?? '—'}% · ${tr.btcHolderTrend || '—'}</span></li>
-    <li><span class="rlabel">Institutional</span><span>BTC ETF AUM: ${l.etfBtc || 'n/a'}</span></li>
-    <li><span class="rlabel">BTC News</span><span>${newsHtml}</span></li>
+    <li><span class="report-label label-tech">TECHNICALS</span><span>RSI(14): ${t.rsi14 || '—'} · MACD: ${t.macdHist || '—'} · Pivot: ${t.pivot || '—'}</span></li>
+    <li><span class="report-label label-btc">BTC DEPTH</span><span>RSI ${tr.btcRsi ?? '—'} · SMA200 ${tr.btcMa200 ?? '—'} · S ${tr.btcSupport ?? '—'} / R ${tr.btcResistance ?? '—'}</span></li>
+    <li><span class="report-label label-leverage">LEVERAGE</span><span>OI ${l.openInterest || '—'} (${l.oiChange24h || '—'}) · Funding ${fmtFunding(l.funding)}</span></li>
+    <li><span class="report-label label-liq">LIQUIDATIONS</span><span>BTC 24h: ${l.liq24h || '—'}</span></li>
+    <li><span class="report-label label-holders">HOLDERS</span><span>LT ${tr.btcLtHolderPct ?? '—'}% · Whales ${tr.btcWhaleConcentration ?? '—'}% · ${tr.btcHolderTrend || '—'}</span></li>
+    <li><span class="report-label label-inst">INSTITUTIONAL</span><span>BTC ETF AUM: ${l.etfBtc || 'n/a'}</span></li>
+    <li><span class="report-label label-news">BTC NEWS</span><span>${newsHtml}</span></li>
   `;
 
   generateTraderRead();

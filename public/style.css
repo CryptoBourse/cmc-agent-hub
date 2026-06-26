@@ -864,6 +864,37 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
+.lev-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  height: 100%;
+}
+.lev-card {
+  background: var(--surface-1, #0f1629);
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.lev-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.lev-val {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: var(--font-mono, monospace);
+  margin-top: 4px;
+}
+.lev-val.negative { color: #ea3943; }
+.lev-val.positive { color: #16c784; }
+
 /* Report & trader read */
 .report-panel,
 .narratives-panel,
@@ -1031,6 +1062,81 @@ body {
   color: var(--accent-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.report-label {
+  font-size: 9px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-family: var(--font-mono, monospace);
+  white-space: nowrap;
+  min-width: 78px;
+  text-align: center;
+  display: inline-block;
+}
+
+.label-tech {
+  background: #1a2a4a;
+  color: #5b8cff;
+  border: 0.5px solid #2a3d6a;
+}
+.label-btc {
+  background: #2a1a00;
+  color: #f7931a;
+  border: 0.5px solid #3d2800;
+}
+.label-leverage {
+  background: #1e1040;
+  color: #a78bfa;
+  border: 0.5px solid #2d1a5e;
+}
+.label-liq {
+  background: #2a0a0a;
+  color: #f87171;
+  border: 0.5px solid #3d1414;
+}
+.label-holders {
+  background: #0a1e14;
+  color: #34d399;
+  border: 0.5px solid #142e1e;
+}
+.label-inst {
+  background: #141820;
+  color: #94a3b8;
+  border: 0.5px solid #1e2535;
+}
+.label-news {
+  background: #181818;
+  color: #6b7280;
+  border: 0.5px solid #252525;
+}
+
+.news-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.news-feed-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+.news-idx {
+  font-size: 9px;
+  color: var(--text-muted);
+  min-width: 14px;
+  padding-top: 1px;
+}
+.news-feed-item a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.news-feed-item a:hover {
+  color: var(--text-primary);
 }
 
 .narrative-grid {
