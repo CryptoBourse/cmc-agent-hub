@@ -2,11 +2,31 @@
   "version": 2,
   "builds": [
     {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "public/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/api/health",
+      "dest": "/api/health.js"
+    },
+    {
+      "src": "/api/skills",
+      "dest": "/api/skills.js"
+    },
+    {
+      "src": "/api/market-report",
+      "dest": "/api/market-report.js"
+    },
+    {
+      "src": "/api/breakout-scan",
+      "dest": "/api/breakout-scan.js"
+    },
     {
       "src": "/(.*)",
       "dest": "/public/$1"
