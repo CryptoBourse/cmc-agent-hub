@@ -676,7 +676,7 @@ async function copyReport() {
   const fgLabel = metricCardSub('fear');
 
   const lines = [
-    'CMC TRADER TERMINAL - Market Report',
+    'CMC AGENT HUB - Market Report',
     $('#timestamp')?.textContent.trim() || '—',
     '',
     `MARKET CAP: ${metricCardValue('market cap')}`,

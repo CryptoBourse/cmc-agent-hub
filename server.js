@@ -90,5 +90,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`CMC Trader Dashboard → http://localhost:${PORT}`);
+  console.log(`CMC Agent Hub → http://localhost:${PORT}`);
 });
