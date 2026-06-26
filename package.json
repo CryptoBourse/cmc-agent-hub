@@ -6,5 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^5.22.0"
   }
 }
