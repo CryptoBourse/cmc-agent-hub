@@ -39,16 +39,21 @@
 html {
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  color-scheme: dark;
 }
 
 body {
   font-family: var(--body);
   font-weight: 400;
   background: var(--bg);
-  color: var(--text);
+  color: #e8eaf0;
   min-height: 100dvh;
   overflow-x: hidden;
   line-height: 1.6;
+}
+
+.app {
+  color: #e8eaf0;
 }
 
 .skip-link {
@@ -362,6 +367,11 @@ body {
   outline: none;
   border-color: rgba(74, 108, 247, 0.45);
   box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.12);
+}
+
+.skill-select option {
+  background: #0f1629;
+  color: #e8eaf0;
 }
 
 .cta-block {
@@ -1034,12 +1044,38 @@ body {
   grid-template-columns: 124px 1fr;
   gap: 14px;
   padding: 13px 15px;
-  background: var(--bg-inset);
+  background: #0f1629;
   border-radius: var(--radius-sm);
   border: 1px solid #1e2d4a;
   font-size: 0.875rem;
   line-height: 1.5;
+  color: #e8eaf0;
   transition: border-color 0.2s var(--ease);
+}
+
+.report-list li > span:last-child {
+  color: #e8eaf0;
+}
+
+.report-list a {
+  color: #8892a4;
+  text-decoration: none;
+}
+
+.report-list a:hover {
+  color: #e8eaf0;
+}
+
+.report-list .inline-list {
+  color: #e8eaf0;
+}
+
+.report-list .inline-list li {
+  color: #e8eaf0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: list-item;
 }
 
 .report-list li:hover {
@@ -1139,6 +1175,18 @@ body {
   text-decoration: none;
 }
 .news-feed-item a:hover {
+  color: #e8eaf0;
+}
+
+.news-title-text {
+  color: #8892a4;
+}
+
+.news-feed-item a .news-title-text {
+  color: inherit;
+}
+
+.news-feed-item a:hover .news-title-text {
   color: #e8eaf0;
 }
 
