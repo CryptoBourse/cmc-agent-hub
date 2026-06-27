@@ -34,6 +34,7 @@
           boxShadow: {
             card: '0 1px 2px rgba(15,23,42,0.04), 0 8px 32px rgba(15,23,42,0.06)',
             lift: '0 4px 24px rgba(30,64,175,0.12)',
+            action: '0 12px 40px rgba(30,64,175,0.1), 0 0 0 1px rgba(184,151,110,0.2)',
           },
         },
       },
@@ -45,7 +46,6 @@
 
   <a href="#main-content" class="skip-link">Aller au contenu</a>
 
-  <!-- Navbar -->
   <header class="sticky top-0 z-50 bg-cream/90 backdrop-blur-md border-b border-line">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 gap-4">
@@ -61,21 +61,17 @@
             <h1 class="font-serif text-lg sm:text-xl font-semibold tracking-tight text-ink truncate">CMC Agent Hub</h1>
           </div>
         </div>
-
         <nav class="hidden md:flex items-center gap-1" aria-label="Navigation principale">
           <a href="#" class="nav-link nav-link-active">Dashboard</a>
           <a href="https://coinmarketcap.com/api/skills-marketplace/" target="_blank" rel="noopener" class="nav-link">Skills</a>
           <a href="#results" class="nav-link">Rapport</a>
         </nav>
-
         <div class="flex items-center gap-2 sm:gap-3 shrink-0">
           <div class="status-pill" id="status-pill" data-state="checking" role="status" aria-live="polite">
             <span class="status-dot" aria-hidden="true"></span>
             <span id="status-label" class="hidden sm:inline">Checking MCP…</span>
           </div>
-          <div class="skill-badge hidden lg:flex">
-            Skill <strong id="skill-badge-name">market-report</strong>
-          </div>
+          <div class="skill-badge hidden lg:flex">Skill <strong id="skill-badge-name">market-report</strong></div>
           <button type="button" class="settings-btn" aria-label="Paramètres" title="Paramètres">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           </button>
@@ -84,9 +80,9 @@
     </div>
   </header>
 
-  <div class="app max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20" id="capture-zone">
+  <div class="app max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24" id="capture-zone">
 
-    <main id="main-content" class="pt-8 space-y-10">
+    <main id="main-content" class="pt-8 space-y-12">
 
       <!-- Skill Launch -->
       <section class="hero-launch" aria-labelledby="hero-title">
@@ -99,7 +95,6 @@
               </div>
               <h2 id="hero-title" class="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-ink mb-3">Live market intelligence</h2>
               <p id="hero-desc" class="text-muted text-[15px] leading-relaxed max-w-xl mb-6">9-step CMC pipeline → structured trader briefing for <span class="highlight">#CMCAgentHub</span>.</p>
-
               <div class="skill-select-wrap mb-5">
                 <label class="field-label" for="skill-select">Active skill</label>
                 <select class="skill-select" id="skill-select" aria-label="Select CMC skill">
@@ -107,21 +102,16 @@
                   <option value="scan_spot_altcoin_breakout_with_social_confirmation">scan_spot_altcoin_breakout_with_social_confirmation (marketplace)</option>
                 </select>
               </div>
-
               <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                 <button class="btn-run" id="run-btn" type="button" aria-label="Run Market Report Skill">
-                  <span class="btn-icon" aria-hidden="true">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2.5v9l7.5-4.5L3 2.5z"/></svg>
-                  </span>
+                  <span class="btn-icon" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2.5v9l7.5-4.5L3 2.5z"/></svg></span>
                   <span class="btn-text">Run Market Report Skill</span>
                 </button>
                 <a class="link-secondary" href="https://coinmarketcap.com/api/skills-marketplace/" target="_blank" rel="noopener">Open Skills Marketplace →</a>
               </div>
-
               <div id="error" class="error hidden mt-4" role="alert"></div>
             </div>
           </div>
-
           <aside class="lg:col-span-2 panel rounded-2xl border border-line bg-surface shadow-card p-5 sm:p-6">
             <p class="card-label mb-4">Pipeline preview</p>
             <ol class="pipeline-preview" id="pipeline-preview" aria-label="Market Report pipeline steps"></ol>
@@ -129,7 +119,6 @@
         </div>
       </section>
 
-      <!-- Pipeline Execution -->
       <section class="pipeline-section" aria-labelledby="pipeline-title">
         <div class="section-head flex flex-wrap items-end justify-between gap-4 mb-5">
           <div>
@@ -144,128 +133,194 @@
         <div class="pipeline" id="steps"></div>
       </section>
 
-      <!-- Report Results -->
-      <section id="results" class="hidden results space-y-8" aria-live="polite">
+      <!-- ═══ REPORT ═══ -->
+      <section id="results" class="hidden results report-flow" aria-live="polite">
 
-        <!-- Header -->
-        <div class="section-head flex flex-wrap items-end justify-between gap-4">
+        <div class="report-hero-head flex flex-wrap items-end justify-between gap-6 pb-2">
           <div>
-            <p class="text-[10px] font-mono uppercase tracking-[0.12em] text-gold mb-1">Rapport généré</p>
-            <h2 class="section-title font-serif text-2xl font-semibold text-ink" id="results-title">Market snapshot</h2>
-            <p class="section-desc text-sm text-muted mt-1">Structured output from the active skill run.</p>
+            <p class="text-[10px] font-mono uppercase tracking-[0.14em] text-gold mb-2">Briefing trader</p>
+            <h2 class="font-serif text-3xl font-semibold tracking-tight text-ink" id="results-title">Market snapshot</h2>
           </div>
-          <span class="section-sub mono timestamp-badge" id="timestamp"></span>
-        </div>
-
-        <!-- 1. Key Metrics -->
-        <div class="report-block">
-          <h3 class="report-block-title">Métriques clés</h3>
-          <div class="metrics-grid" id="metrics" data-section="metrics">
-            <div class="section-empty">Run the skill to load market metrics.</div>
-          </div>
-          <p class="section-error hidden" id="err-metrics" role="alert"></p>
-        </div>
-
-        <!-- Charts -->
-        <div class="charts-row" id="charts-row">
-          <div class="chart-card panel" data-section="fng">
-            <p class="card-label">Fear &amp; Greed index</p>
-            <div class="gauge-wrap">
-              <svg id="gauge-fng" viewBox="0 0 200 120" class="gauge-svg" role="img" aria-label="Fear and Greed gauge"></svg>
-              <div class="gauge-value tabular" id="gauge-fng-val">—</div>
-            </div>
-            <div class="skeleton skeleton-gauge hidden" aria-hidden="true"></div>
-          </div>
-          <div class="chart-card panel" data-section="dominance">
-            <p class="card-label">Market dominance</p>
-            <div id="dominance-chart" class="bar-chart">
-              <div class="section-empty compact">Awaiting dominance data…</div>
-            </div>
-            <p class="section-error hidden" id="err-dominance" role="alert"></p>
-          </div>
-          <div class="chart-card panel" data-section="leverage">
-            <p class="card-label">Leverage pulse</p>
-            <div id="leverage-chart" class="leverage-grid">
-              <div class="section-empty compact">Awaiting derivatives data…</div>
-            </div>
-            <p class="section-error hidden" id="err-leverage" role="alert"></p>
+          <div class="flex items-center gap-3">
+            <button type="button" class="btn-ghost" id="copy-report-btn">⧉ Copy report</button>
+            <span class="live-badge"><span class="live-dot" aria-hidden="true"></span> Live</span>
+            <span class="section-sub mono timestamp-badge" id="timestamp"></span>
           </div>
         </div>
 
-        <!-- 2. Trader Read (Bias & Sentiment) -->
-        <div class="report-block">
-          <h3 class="report-block-title">Sentiment &amp; Bias</h3>
+        <!-- 1. Market Snapshot -->
+        <div class="report-block report-block-snapshot">
+          <div class="report-block-header">
+            <span class="report-block-num">01</span>
+            <h3 class="report-block-title">Market snapshot</h3>
+          </div>
+          <div class="snapshot-body">
+            <div class="metrics-grid metrics-grid-compact" id="metrics" data-section="metrics">
+              <div class="section-empty">Run the skill to load market metrics.</div>
+            </div>
+            <p class="section-error hidden" id="err-metrics" role="alert"></p>
+            <div class="charts-row charts-row-compact" id="charts-row">
+              <div class="chart-card chart-card-compact panel" data-section="fng">
+                <p class="card-label">Fear &amp; Greed</p>
+                <div class="gauge-wrap gauge-wrap-compact">
+                  <svg id="gauge-fng" viewBox="0 0 200 120" class="gauge-svg" role="img" aria-label="Fear and Greed gauge"></svg>
+                  <div class="gauge-value tabular" id="gauge-fng-val">—</div>
+                </div>
+              </div>
+              <div class="chart-card chart-card-compact panel" data-section="dominance">
+                <p class="card-label">Dominance</p>
+                <div id="dominance-chart" class="bar-chart">
+                  <div class="section-empty compact">Awaiting data…</div>
+                </div>
+                <p class="section-error hidden" id="err-dominance" role="alert"></p>
+              </div>
+              <div class="chart-card chart-card-compact panel" data-section="leverage">
+                <p class="card-label">Leverage</p>
+                <div id="leverage-chart" class="leverage-grid">
+                  <div class="section-empty compact">Awaiting data…</div>
+                </div>
+                <p class="section-error hidden" id="err-leverage" role="alert"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Sentiment & Bias -->
+        <div class="report-block" id="sentiment-bias-section">
+          <div class="report-block-header">
+            <span class="report-block-num">02</span>
+            <h3 class="report-block-title">Sentiment &amp; Bias</h3>
+            <span class="signal-badge ml-auto">AI signal</span>
+          </div>
           <div class="trader-read-panel panel panel-accent" id="trader-read-panel">
-            <div class="section-head compact flex items-center justify-between mb-4">
-              <h3 class="subsection-title font-serif text-lg font-semibold">Trader read</h3>
-              <span class="signal-badge">AI signal</span>
-            </div>
-            <div class="trader-read-grid">
-              <div class="tr-row tr-row-highlight">
-                <span class="tr-label">Bias</span>
-                <span class="tr-value" id="tr-bias">—</span>
+            <div class="sentiment-grid">
+              <div class="signal-card signal-card-primary">
+                <span class="signal-card-label">Bias</span>
+                <p class="signal-card-value" id="tr-bias">—</p>
               </div>
-              <div class="tr-row tr-row-highlight">
-                <span class="tr-label">Sentiment</span>
-                <span class="tr-value" id="tr-sentiment">—</span>
+              <div class="signal-card signal-card-primary">
+                <span class="signal-card-label">Sentiment</span>
+                <p class="signal-card-value" id="tr-sentiment">—</p>
               </div>
-              <div class="tr-row">
-                <span class="tr-label">Leverage</span>
-                <span class="tr-value" id="tr-leverage">—</span>
+              <div class="signal-card">
+                <span class="signal-card-label">Leverage</span>
+                <p class="signal-card-value signal-card-value-sm" id="tr-leverage">—</p>
               </div>
-              <div class="tr-row">
-                <span class="tr-label">Whale</span>
-                <span class="tr-value" id="tr-whale">—</span>
+              <div class="signal-card">
+                <span class="signal-card-label">Whale</span>
+                <p class="signal-card-value signal-card-value-sm" id="tr-whale">—</p>
               </div>
-              <div class="tr-row tr-row-setup col-span-full">
-                <span class="tr-label">Setup</span>
-                <span class="tr-value tr-setup" id="tr-setup">—</span>
+              <div class="signal-card signal-card-meta">
+                <span class="signal-card-label">Niveau de conviction</span>
+                <p class="signal-card-badge" id="tr-conviction" data-level="—">—</p>
+              </div>
+              <div class="signal-card signal-card-meta">
+                <span class="signal-card-label">Direction probable</span>
+                <p class="signal-card-value signal-card-value-sm" id="tr-direction">—</p>
+              </div>
+              <div class="signal-card signal-card-meta">
+                <span class="signal-card-label">Horizon</span>
+                <p class="signal-card-value signal-card-value-sm" id="tr-horizon">—</p>
+              </div>
+              <div class="signal-card signal-card-meta signal-card-confidence">
+                <span class="signal-card-label">Confiance du setup</span>
+                <div class="confidence-meter">
+                  <div class="confidence-meter-bar" id="tr-confidence-bar" style="width:0%"></div>
+                </div>
+                <p class="confidence-meter-val" id="tr-confidence">—</p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- 3. Structured Report -->
-        <div class="report-block">
-          <h3 class="report-block-title">Technicals &amp; données structurées</h3>
-          <div class="report-panel panel">
-            <div class="section-head compact flex items-center justify-between mb-4">
-              <h3 class="subsection-title font-serif text-lg font-semibold">Structured report output</h3>
-              <div class="panel-actions flex items-center gap-3">
-                <button type="button" class="btn-ghost" id="copy-report-btn">⧉ Copy report</button>
-                <span class="live-badge"><span class="live-dot" aria-hidden="true"></span> Live</span>
+        <!-- 3. Setup & Action ★ -->
+        <div class="report-block report-block-featured" id="setup-action-section">
+          <div class="report-block-header">
+            <span class="report-block-num report-block-num-gold">03</span>
+            <h3 class="report-block-title">Setup &amp; Action</h3>
+            <span class="featured-pill">Actionnable</span>
+          </div>
+          <div class="setup-action-panel" id="setup-action-panel">
+            <div class="setup-action-hero panel">
+              <div class="setup-action-hero-top">
+                <span class="card-label">Setup dominant</span>
+                <p class="setup-dominant" id="tr-setup">—</p>
+              </div>
+              <div class="setup-action-hero-bottom">
+                <span class="card-label">Action recommandée</span>
+                <p class="action-rec" id="sa-action">—</p>
               </div>
             </div>
-            <ul class="report-list" id="report-list">
-              <li class="section-empty inline">Report rows will appear here.</li>
-            </ul>
-            <p class="section-error hidden" id="err-report" role="alert"></p>
+            <div class="setup-action-grid">
+              <div class="sa-card panel">
+                <span class="sa-card-label">Niveaux clés</span>
+                <ul class="sa-levels" id="sa-levels">
+                  <li><span class="sa-level-key">Support</span><span class="sa-level-val" id="sa-support">—</span></li>
+                  <li><span class="sa-level-key">Résistance</span><span class="sa-level-val" id="sa-resistance">—</span></li>
+                  <li><span class="sa-level-key">SMA 200</span><span class="sa-level-val" id="sa-sma200">—</span></li>
+                  <li><span class="sa-level-key">Pivot</span><span class="sa-level-val" id="sa-pivot">—</span></li>
+                </ul>
+              </div>
+              <div class="sa-card panel">
+                <span class="sa-card-label">Scénarios</span>
+                <ul class="sa-scenarios" id="sa-scenarios">
+                  <li class="sa-scenario sa-scenario-bull"><span class="sa-scenario-tag">Haussier</span><span id="sa-scenario-bull">—</span></li>
+                  <li class="sa-scenario sa-scenario-base"><span class="sa-scenario-tag">Base</span><span id="sa-scenario-base">—</span></li>
+                  <li class="sa-scenario sa-scenario-bear"><span class="sa-scenario-tag">Baissier</span><span id="sa-scenario-bear">—</span></li>
+                </ul>
+              </div>
+              <div class="sa-card panel sa-card-risk col-span-full">
+                <span class="sa-card-label">Risk management</span>
+                <p class="sa-risk-text" id="sa-risk">—</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        <!-- 4. Trending Narratives -->
+        <!-- 4. Technicals (accordéon) -->
         <div class="report-block">
-          <h3 class="report-block-title" id="narratives-title">Trending narratives</h3>
-          <div class="narratives-panel panel">
-            <div class="narrative-grid" id="narratives">
+          <div class="report-block-header">
+            <span class="report-block-num">04</span>
+            <h3 class="report-block-title">Technicals</h3>
+          </div>
+          <details class="technicals-accordion panel" id="technicals-accordion">
+            <summary class="technicals-summary">
+              <span>Voir les données techniques détaillées</span>
+              <span class="technicals-chevron" aria-hidden="true">▼</span>
+            </summary>
+            <div class="technicals-body">
+              <ul class="report-list" id="report-list">
+                <li class="section-empty inline">Report rows will appear here.</li>
+              </ul>
+              <p class="section-error hidden" id="err-report" role="alert"></p>
+            </div>
+          </details>
+        </div>
+
+        <!-- 5. Trending Narratives -->
+        <div class="report-block">
+          <div class="report-block-header">
+            <span class="report-block-num">05</span>
+            <h3 class="report-block-title" id="narratives-title">Trending narratives</h3>
+          </div>
+          <div class="narratives-panel panel narratives-panel-compact">
+            <div class="narrative-list" id="narratives">
               <div class="section-empty inline">Narrative cards will appear here.</div>
             </div>
             <p class="section-error hidden" id="err-narratives" role="alert"></p>
           </div>
         </div>
 
-        <!-- 5. Mon Analyse -->
+        <!-- 6. Mon Analyse -->
         <div class="report-block">
-          <h3 class="report-block-title">Mon analyse</h3>
+          <div class="report-block-header">
+            <span class="report-block-num">06</span>
+            <h3 class="report-block-title">Mon analyse</h3>
+          </div>
           <div class="analysis-panel panel">
-            <p class="text-sm text-muted mb-4">Ajoutez vos notes personnelles sur ce rapport. Sauvegardées automatiquement dans votre navigateur.</p>
+            <p class="text-sm text-muted mb-4">Vos notes personnelles — sauvegardées localement dans votre navigateur.</p>
             <label for="user-analysis" class="sr-only">Mon analyse personnelle</label>
-            <textarea
-              id="user-analysis"
-              class="analysis-textarea"
-              rows="5"
-              placeholder="Ex. : Je reste prudent sur les alts, BTC hold au-dessus du support clé. Rotation possible si dominance baisse sous 54%…"
-            ></textarea>
+            <textarea id="user-analysis" class="analysis-textarea" rows="5" placeholder="Ex. : Je reste prudent sur les alts, BTC hold au-dessus du support clé…"></textarea>
             <div class="flex items-center justify-between mt-3">
               <span id="analysis-save-hint" class="text-xs font-mono text-muted">Prêt</span>
               <button type="button" id="analysis-clear-btn" class="btn-ghost text-xs">Effacer</button>

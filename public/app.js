@@ -115,7 +115,8 @@ function applySkillUi() {
   $('#results-title').textContent = skill.resultsTitle;
   $('#narratives-title').textContent = skill.narrativesTitle;
   $('#charts-row').classList.toggle('hidden', skill.mode === 'breakout');
-  $('#trader-read-panel')?.classList.toggle('hidden', skill.mode === 'breakout');
+  $('#sentiment-bias-section')?.classList.toggle('hidden', skill.mode === 'breakout');
+  $('#setup-action-section')?.classList.toggle('hidden', skill.mode === 'breakout');
   btnRunLabel(skill.runLabel);
   renderSteps();
   renderPipelinePreview();
@@ -202,7 +203,7 @@ function showSkeletons() {
   $('#leverage-chart').innerHTML = '<div class="skeleton skeleton-bars tall" aria-hidden="true"></div>';
   $('#report-list').innerHTML = '<li class="skeleton skeleton-line full" aria-hidden="true"></li>'.repeat(3);
   $('#narratives').innerHTML = Array.from({ length: 3 }, () =>
-    '<div class="skeleton skeleton-card narrative" aria-hidden="true"></div>').join('');
+    '<div class="skeleton skeleton-line full narrative-skeleton" aria-hidden="true"></div>').join('');
   clearSectionErrors();
 }
 
@@ -404,32 +405,158 @@ function generateTraderRead() {
     whaleEl.style.color = 'var(--text-secondary)';
   }
 
-  const setupEl = $('#tr-setup');
-  setupEl.textContent = setup;
-  setupEl.style.borderRadius = '4px';
-  setupEl.style.padding = '5px 10px';
-  setupEl.style.display = 'inline-block';
-  if (setup.includes('LONG HAUTE PROBABILITE')) {
-    setupEl.style.background = '#ECFDF5';
-    setupEl.style.border = '1px solid #059669';
-    setupEl.style.color = '#059669';
-  } else if (setup.includes('SUREXTENSION')) {
-    setupEl.style.background = '#FEF2F2';
-    setupEl.style.border = '1px solid #DC2626';
-    setupEl.style.color = '#DC2626';
-  } else if (setup.includes('POST-LIQUIDATION')) {
-    setupEl.style.background = '#FFFBEB';
-    setupEl.style.border = '1px solid #D97706';
-    setupEl.style.color = '#D97706';
-  } else if (setup.includes('BTC Season') || setup.toLowerCase().includes('altcoin')) {
-    setupEl.style.background = '#EFF6FF';
-    setupEl.style.border = '1px solid #1E40AF';
-    setupEl.style.color = '#1E40AF';
+  paintSetupEl($('#tr-setup'), setup);
+
+  let conviction;
+  if (bias.includes('Bullish') || bias.includes('baissière')) {
+    conviction = (bias.includes('Bullish') && fg > 45) || (bias.includes('baissière') && fg < 30) ? 'Élevé' : 'Modéré';
+  } else if (bias.includes('Range')) {
+    conviction = 'Faible';
   } else {
-    setupEl.style.background = 'transparent';
-    setupEl.style.border = '1px solid var(--border)';
-    setupEl.style.color = 'var(--text-muted)';
+    conviction = 'Modéré';
   }
+
+  let direction;
+  if (bias.includes('Bullish') || bias.includes('haussier')) direction = 'Haussier';
+  else if (bias.includes('baissière')) direction = 'Baissier';
+  else if (bias.includes('Range')) direction = 'Range / Neutre';
+  else direction = 'Indécis';
+
+  let horizon;
+  if (liq24h > 400 || Math.abs(btc24h) > 5) horizon = 'Court terme (24–72h)';
+  else if (fg < 40 || fg > 70) horizon = 'Swing (3–10 jours)';
+  else horizon = 'Positionnel (2–4 sem.)';
+
+  let confidenceScore = 50;
+  if (setup.includes('LONG HAUTE PROBABILITE')) confidenceScore = 82;
+  else if (setup.includes('SUREXTENSION')) confidenceScore = 78;
+  else if (setup.includes('POST-LIQUIDATION')) confidenceScore = 65;
+  else if (setup.includes('BTC Season') || setup.toLowerCase().includes('altcoin')) confidenceScore = 70;
+  else if (setup.includes('flat')) confidenceScore = 32;
+  if (bias.includes('mixtes') || bias.includes('Range')) confidenceScore -= 12;
+  if (conviction === 'Élevé') confidenceScore += 8;
+  confidenceScore = Math.max(18, Math.min(92, confidenceScore));
+
+  const convictionEl = $('#tr-conviction');
+  if (convictionEl) {
+    convictionEl.textContent = conviction;
+    convictionEl.dataset.level = conviction;
+    convictionEl.className = 'signal-card-badge';
+    if (conviction === 'Élevé') convictionEl.classList.add('badge-high');
+    else if (conviction === 'Modéré') convictionEl.classList.add('badge-mid');
+    else convictionEl.classList.add('badge-low');
+  }
+
+  const directionEl = $('#tr-direction');
+  if (directionEl) {
+    directionEl.textContent = direction;
+    directionEl.style.color = direction === 'Haussier' ? '#059669' : direction === 'Baissier' ? '#DC2626' : 'var(--text-secondary)';
+  }
+
+  const horizonEl = $('#tr-horizon');
+  if (horizonEl) horizonEl.textContent = horizon;
+
+  const confidenceEl = $('#tr-confidence');
+  const confidenceBar = $('#tr-confidence-bar');
+  if (confidenceEl) confidenceEl.textContent = `${confidenceScore}%`;
+  if (confidenceBar) {
+    confidenceBar.style.width = `${confidenceScore}%`;
+    confidenceBar.className = 'confidence-meter-bar';
+    if (confidenceScore >= 70) confidenceBar.classList.add('bar-high');
+    else if (confidenceScore >= 45) confidenceBar.classList.add('bar-mid');
+    else confidenceBar.classList.add('bar-low');
+  }
+
+  generateSetupAction({ setup, bias, direction, conviction, confidenceScore, fg, rsi, btc24h, liq24h, fundingRate, btcDominance });
+}
+
+function paintSetupEl(el, setup) {
+  if (!el) return;
+  el.textContent = setup;
+  el.style.borderRadius = '8px';
+  el.style.padding = '12px 16px';
+  el.style.display = 'block';
+  if (setup.includes('LONG HAUTE PROBABILITE')) {
+    el.style.background = '#ECFDF5';
+    el.style.border = '1px solid #059669';
+    el.style.color = '#059669';
+  } else if (setup.includes('SUREXTENSION')) {
+    el.style.background = '#FEF2F2';
+    el.style.border = '1px solid #DC2626';
+    el.style.color = '#DC2626';
+  } else if (setup.includes('POST-LIQUIDATION')) {
+    el.style.background = '#FFFBEB';
+    el.style.border = '1px solid #D97706';
+    el.style.color = '#D97706';
+  } else if (setup.includes('BTC Season') || setup.toLowerCase().includes('altcoin')) {
+    el.style.background = '#EFF6FF';
+    el.style.border = '1px solid #1E40AF';
+    el.style.color = '#1E40AF';
+  } else {
+    el.style.background = 'var(--surface-soft)';
+    el.style.border = '1px solid var(--border)';
+    el.style.color = 'var(--text-muted)';
+  }
+}
+
+function generateSetupAction(ctx) {
+  const d = reportData;
+  const support = d.btcSupport ?? '—';
+  const resistance = d.btcResistance ?? '—';
+  const sma200 = d.btcMa200 ?? '—';
+  const pivot = d.pivot ?? '—';
+
+  $('#sa-support').textContent = support;
+  $('#sa-resistance').textContent = resistance;
+  $('#sa-sma200').textContent = sma200;
+  $('#sa-pivot').textContent = pivot;
+
+  let action;
+  const { setup, bias, direction, conviction, confidenceScore, fg, rsi, btc24h, liq24h, fundingRate, btcDominance } = ctx;
+  if (setup.includes('LONG HAUTE PROBABILITE')) {
+    action = 'Entrée long progressive — DCA sur pullbacks vers le support, confirmation volume requise';
+  } else if (setup.includes('SUREXTENSION')) {
+    action = 'Réduire l\'exposition — prendre des profits partiels, hedger ou resserrer les stops';
+  } else if (setup.includes('POST-LIQUIDATION')) {
+    action = 'Attendre stabilisation — petites tailles uniquement sur rebond confirmé au-dessus du pivot';
+  } else if (setup.includes('BTC Season')) {
+    action = 'Concentrer le capital sur BTC — éviter les alts faibles, privilégier les leaders';
+  } else if (setup.toLowerCase().includes('altcoin')) {
+    action = 'Sélection active d\'alts — top narratives uniquement, taille réduite par position';
+  } else {
+    action = 'Rester flat ou taille réduite — pas d\'engagement directionnel sans trigger clair';
+  }
+  const actionEl = $('#sa-action');
+  if (actionEl) actionEl.textContent = action;
+
+  const bullText = direction === 'Haussier'
+    ? `Break ${resistance} avec F&G > 55 → extension vers nouveaux highs, OI en hausse`
+    : `Rebond sur ${support} + RSI remonte → rally technique court terme possible`;
+  const baseText = conviction === 'Faible' || bias.includes('Range')
+    ? `Range ${support} – ${resistance} — scalping uniquement, pas de conviction directionnelle`
+    : `Consolidation autour du pivot ${pivot} — attendre cassure confirmée`;
+  const bearText = direction === 'Baissier' || fg > 75
+    ? `Perte de ${support} → accélération baissière, cible SMA200 ${sma200}`
+    : `Rejet à ${resistance} + funding positif → pullback vers ${support}`;
+
+  $('#sa-scenario-bull').textContent = bullText;
+  $('#sa-scenario-base').textContent = baseText;
+  $('#sa-scenario-bear').textContent = bearText;
+
+  let risk;
+  const sizePct = confidenceScore >= 70 ? '2–3%' : confidenceScore >= 45 ? '1–1.5%' : '0.5% max';
+  const stopHint = support !== '—' ? `stop sous ${support}` : 'stop sous dernier swing low';
+  if (liq24h > 500 || Math.abs(fundingRate) > 0.05) {
+    risk = `Taille max ${sizePct} du capital par trade · ${stopHint} · Réduire levier (volatilité élevée, liquidations récentes)`;
+  } else if (fg > 75 || rsi > 70) {
+    risk = `Taille max ${sizePct} · ${stopHint} · R:R min 1:2 · Ne pas ajouter en euphorie (F&G ${fg})`;
+  } else if (fg < 30) {
+    risk = `Taille max ${sizePct} · ${stopHint} · Entrées échelonnées — peur extrême = slippage possible`;
+  } else {
+    risk = `Taille max ${sizePct} du capital · ${stopHint} · R:R min 1:2 · Respecter le plan si dominance BTC ${btcDominance}%`;
+  }
+  const riskEl = $('#sa-risk');
+  if (riskEl) riskEl.textContent = risk;
 }
 
 function levValSignClass(val) {
@@ -537,6 +664,10 @@ function renderReport(data) {
     btcDominance: tr.btcDominance ?? parseNum(s.btcDom),
     rsi: tr.rsi ?? parseNum(tr.btcRsi) ?? parseNum(t.rsi14),
     btcCurrentPrice: tr.btcCurrentPrice ?? parseNum(a.btc?.price),
+    btcSupport: tr.btcSupport,
+    btcResistance: tr.btcResistance,
+    btcMa200: tr.btcMa200,
+    pivot: t.pivot,
   };
 
   const btcNews = (r.btcNews || []).slice(0, 5);
@@ -569,10 +700,12 @@ function renderReport(data) {
   } else {
     const narratives = uniqueNarratives(r.narratives);
     $('#narratives').innerHTML = narratives.map((n, i) => `
-      <div class="narrative-card">
-        <div class="narrative-rank">#${i + 1}</div>
-        <div class="narrative-name">${n.name}</div>
-        <div class="narrative-meta">${n.mcap} · 24h ${n.change24h}</div>
+      <div class="narrative-row">
+        <span class="narrative-rank">#${i + 1}</span>
+        <div class="narrative-row-body">
+          <span class="narrative-name">${n.name}</span>
+          <span class="narrative-meta">${n.mcap} · 24h ${n.change24h}</span>
+        </div>
       </div>`).join('');
   }
 
@@ -633,11 +766,12 @@ function renderBreakoutReport(data) {
     $('#narratives').innerHTML = `<div class="section-empty inline">${r.summary || 'No spot altcoin currently clears the full breakout gate set — watchlist state.'}</div>`;
   } else {
     $('#narratives').innerHTML = analyzed.map((n) => `
-      <div class="narrative-card">
-        <div class="narrative-rank">#${n.rank}</div>
-        <div class="narrative-name">${n.name}${n.symbol ? ` (${n.symbol})` : ''}</div>
-        <div class="narrative-meta">EMA50 ${n.closeVsEma50 ?? '—'} · Vol ${n.volumeRatio ?? '—'} · MACD ${n.macdExpansion ?? '—'}</div>
-        <div class="narrative-meta">RSI Δ ${n.rsiDelta ?? '—'} · ${n.narrativeStatus || 'narrative n/a'}</div>
+      <div class="narrative-row">
+        <span class="narrative-rank">#${n.rank}</span>
+        <div class="narrative-row-body">
+          <span class="narrative-name">${n.name}${n.symbol ? ` (${n.symbol})` : ''}</span>
+          <span class="narrative-meta">EMA50 ${n.closeVsEma50 ?? '—'} · Vol ${n.volumeRatio ?? '—'} · MACD ${n.macdExpansion ?? '—'} · RSI Δ ${n.rsiDelta ?? '—'}</span>
+        </div>
       </div>`).join('');
   }
 
@@ -731,7 +865,7 @@ function metricCardSub(labelMatch) {
 }
 
 function formatNarrativesBlock() {
-  const cards = [...document.querySelectorAll('#narratives .narrative-card')];
+  const cards = [...document.querySelectorAll('#narratives .narrative-row, #narratives .narrative-card')];
   if (!cards.length) return '';
   const lines = cards.map((card) => {
     const rank = card.querySelector('.narrative-rank')?.textContent.trim() || '';
