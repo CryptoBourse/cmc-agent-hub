@@ -38,7 +38,7 @@ const SKILLS = {
   },
 };
 
-const STEP_BADGE_COLOR = '#5b8cff';
+const STEP_BADGE_COLOR = '#1E40AF';
 let reportData = {};
 
 function getActiveSkill() {
@@ -231,12 +231,12 @@ function drawFearGreedGauge(value, label) {
   const arcLen = (v / 100) * 220;
 
   svg.innerHTML = `
-    <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="12" stroke-linecap="round"/>
+    <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="rgba(15,23,42,0.08)" stroke-width="12" stroke-linecap="round"/>
     <path d="M 30 100 A 70 70 0 0 1 170 100" fill="none" stroke="${color}" stroke-width="12" stroke-linecap="round"
       stroke-dasharray="${arcLen} 220"/>
     <line x1="${cx}" y1="${cy}" x2="${needleX}" y2="${needleY}" stroke="${color}" stroke-width="3" stroke-linecap="round"/>
     <circle cx="${cx}" cy="${cy}" r="6" fill="${color}"/>
-    <text x="100" y="108" text-anchor="middle" fill="#7d8db5" font-size="9" font-family="IBM Plex Mono">${label || ''}</text>
+    <text x="100" y="108" text-anchor="middle" fill="#94A3B8" font-size="9" font-family="IBM Plex Mono">${label || ''}</text>
   `;
   svg.setAttribute('aria-label', `Fear and Greed index ${v}, ${label || ''}`);
   $('#gauge-fng-val').textContent = v;
@@ -410,21 +410,21 @@ function generateTraderRead() {
   setupEl.style.padding = '5px 10px';
   setupEl.style.display = 'inline-block';
   if (setup.includes('LONG HAUTE PROBABILITE')) {
-    setupEl.style.background = '#0a2a15';
-    setupEl.style.border = '1px solid #16c784';
-    setupEl.style.color = '#16c784';
+    setupEl.style.background = '#ECFDF5';
+    setupEl.style.border = '1px solid #059669';
+    setupEl.style.color = '#059669';
   } else if (setup.includes('SUREXTENSION')) {
-    setupEl.style.background = '#2a0a0a';
-    setupEl.style.border = '1px solid #ea3943';
-    setupEl.style.color = '#ea3943';
+    setupEl.style.background = '#FEF2F2';
+    setupEl.style.border = '1px solid #DC2626';
+    setupEl.style.color = '#DC2626';
   } else if (setup.includes('POST-LIQUIDATION')) {
-    setupEl.style.background = '#2a1200';
-    setupEl.style.border = '1px solid #f7931a';
-    setupEl.style.color = '#f7931a';
+    setupEl.style.background = '#FFFBEB';
+    setupEl.style.border = '1px solid #D97706';
+    setupEl.style.color = '#D97706';
   } else if (setup.includes('BTC Season') || setup.toLowerCase().includes('altcoin')) {
-    setupEl.style.background = '#0a1535';
-    setupEl.style.border = '1px solid #3861fb';
-    setupEl.style.color = '#5b8cff';
+    setupEl.style.background = '#EFF6FF';
+    setupEl.style.border = '1px solid #1E40AF';
+    setupEl.style.color = '#1E40AF';
   } else {
     setupEl.style.background = 'transparent';
     setupEl.style.border = '1px solid var(--border)';

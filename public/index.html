@@ -3,119 +3,170 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="CMC Agent Hub — terminal trader alimenté par le pipeline market-report CoinMarketCap et Skills Marketplace." />
+  <meta name="description" content="CMC Agent Hub — rapport de marché crypto premium via Skills CoinMarketCap." />
   <meta property="og:title" content="CMC Agent Hub" />
-  <meta property="og:description" content="Live market intelligence via 9-step CMC pipeline for #CMCAgentHub." />
+  <meta property="og:description" content="Live market intelligence via 9-step CMC pipeline." />
   <meta property="og:type" content="website" />
   <title>CMC Agent Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#FAFAF8',
+            ink: '#0F172A',
+            accent: '#1E40AF',
+            gold: '#B8976E',
+            muted: '#64748B',
+            line: '#E8E6E1',
+            surface: '#FFFFFF',
+            'surface-soft': '#F4F4F1',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            serif: ['Fraunces', 'Georgia', 'serif'],
+            mono: ['"IBM Plex Mono"', 'monospace'],
+          },
+          boxShadow: {
+            card: '0 1px 2px rgba(15,23,42,0.04), 0 8px 32px rgba(15,23,42,0.06)',
+            lift: '0 4px 24px rgba(30,64,175,0.12)',
+          },
+        },
+      },
+    };
+  </script>
   <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
-  <a class="skip-link" href="#main-content">Aller au contenu</a>
+<body class="bg-cream text-ink font-sans antialiased min-h-dvh">
 
-  <div class="ambient" aria-hidden="true">
-    <div class="ambient-mesh"></div>
-    <div class="ambient-grid"></div>
-    <div class="grain"></div>
-  </div>
+  <a href="#main-content" class="skip-link">Aller au contenu</a>
 
-  <div class="app" id="capture-zone">
-    <header class="header">
-      <div class="header-left">
-        <div class="logo-mark" aria-hidden="true">
-          <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-            <rect x="1" y="1" width="24" height="24" rx="6" stroke="currentColor" stroke-width="1.25"/>
-            <path d="M7 17 L13 7 L19 17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+  <!-- Navbar -->
+  <header class="sticky top-0 z-50 bg-cream/90 backdrop-blur-md border-b border-line">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="logo-mark shrink-0 w-10 h-10 rounded-xl bg-accent/8 border border-accent/15 flex items-center justify-center text-accent">
+            <svg width="22" height="22" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+              <rect x="1" y="1" width="24" height="24" rx="6" stroke="currentColor" stroke-width="1.25"/>
+              <path d="M7 17 L13 7 L19 17" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <p class="text-[10px] font-mono uppercase tracking-[0.14em] text-gold">CoinMarketCap</p>
+            <h1 class="font-serif text-lg sm:text-xl font-semibold tracking-tight text-ink truncate">CMC Agent Hub</h1>
+          </div>
         </div>
-        <div>
-          <p class="eyebrow">CoinMarketCap</p>
-          <h1>CMC Agent Hub</h1>
+
+        <nav class="hidden md:flex items-center gap-1" aria-label="Navigation principale">
+          <a href="#" class="nav-link nav-link-active">Dashboard</a>
+          <a href="https://coinmarketcap.com/api/skills-marketplace/" target="_blank" rel="noopener" class="nav-link">Skills</a>
+          <a href="#results" class="nav-link">Rapport</a>
+        </nav>
+
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div class="status-pill" id="status-pill" data-state="checking" role="status" aria-live="polite">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span id="status-label" class="hidden sm:inline">Checking MCP…</span>
+          </div>
+          <div class="skill-badge hidden lg:flex">
+            Skill <strong id="skill-badge-name">market-report</strong>
+          </div>
+          <button type="button" class="settings-btn" aria-label="Paramètres" title="Paramètres">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </button>
         </div>
       </div>
-      <div class="header-right">
-        <div class="status-pill" id="status-pill" data-state="checking" role="status" aria-live="polite">
-          <span class="status-dot" aria-hidden="true"></span>
-          <span id="status-label">Checking MCP…</span>
-        </div>
-        <div class="skill-badge">
-          Skill <strong id="skill-badge-name">market-report</strong>
-        </div>
-      </div>
-    </header>
+    </div>
+  </header>
 
-    <main id="main-content">
-      <section class="hero panel" aria-labelledby="hero-title">
-        <div class="hero-grid">
-          <div class="hero-copy">
-            <p class="hero-kicker">Terminal trader</p>
-            <h2 id="hero-title">Live market intelligence</h2>
-            <p id="hero-desc" class="hero-lead">9-step CMC pipeline → structured trader briefing for <span class="highlight">#CMCAgentHub</span>.</p>
+  <div class="app max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20" id="capture-zone">
 
-            <div class="skill-select-wrap">
-              <label class="field-label" for="skill-select">Active skill</label>
-              <select class="skill-select" id="skill-select" aria-label="Select CMC skill">
-                <option value="market-report">market-report (local MCP)</option>
-                <option value="scan_spot_altcoin_breakout_with_social_confirmation">scan_spot_altcoin_breakout_with_social_confirmation (marketplace)</option>
-              </select>
+    <main id="main-content" class="pt-8 space-y-10">
+
+      <!-- Skill Launch -->
+      <section class="hero-launch" aria-labelledby="hero-title">
+        <div class="grid lg:grid-cols-5 gap-6 lg:gap-8 items-start">
+          <div class="lg:col-span-3 panel-gold">
+            <div class="panel-inner p-6 sm:p-8">
+              <div class="flex flex-wrap items-center gap-2 mb-4">
+                <span class="tag-pill">Terminal trader</span>
+                <span class="tag-pill tag-pill-gold">#CMCAgentHub</span>
+              </div>
+              <h2 id="hero-title" class="font-serif text-2xl sm:text-3xl font-semibold tracking-tight text-ink mb-3">Live market intelligence</h2>
+              <p id="hero-desc" class="text-muted text-[15px] leading-relaxed max-w-xl mb-6">9-step CMC pipeline → structured trader briefing for <span class="highlight">#CMCAgentHub</span>.</p>
+
+              <div class="skill-select-wrap mb-5">
+                <label class="field-label" for="skill-select">Active skill</label>
+                <select class="skill-select" id="skill-select" aria-label="Select CMC skill">
+                  <option value="market-report">market-report (local MCP)</option>
+                  <option value="scan_spot_altcoin_breakout_with_social_confirmation">scan_spot_altcoin_breakout_with_social_confirmation (marketplace)</option>
+                </select>
+              </div>
+
+              <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                <button class="btn-run" id="run-btn" type="button" aria-label="Run Market Report Skill">
+                  <span class="btn-icon" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2.5v9l7.5-4.5L3 2.5z"/></svg>
+                  </span>
+                  <span class="btn-text">Run Market Report Skill</span>
+                </button>
+                <a class="link-secondary" href="https://coinmarketcap.com/api/skills-marketplace/" target="_blank" rel="noopener">Open Skills Marketplace →</a>
+              </div>
+
+              <div id="error" class="error hidden mt-4" role="alert"></div>
             </div>
-
-            <div class="tags">
-              <span class="tag">@coinmarketcap</span>
-              <span class="tag">#CMCAgentHub</span>
-              <span class="tag">Skills Marketplace</span>
-            </div>
-
-            <div class="cta-block">
-              <button class="btn-run" id="run-btn" type="button" aria-label="Run Market Report Skill">
-                <span class="btn-icon" aria-hidden="true">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M3 2.5v9l7.5-4.5L3 2.5z"/></svg>
-                </span>
-                <span class="btn-text">Run Market Report Skill</span>
-              </button>
-              <a class="link-secondary" href="https://coinmarketcap.com/api/skills-marketplace/" target="_blank" rel="noopener">
-                Open Skills Marketplace →
-              </a>
-            </div>
-
-            <div id="error" class="error hidden" role="alert"></div>
           </div>
 
-          <aside class="hero-visual panel-inset">
-            <p class="card-label">Pipeline preview</p>
+          <aside class="lg:col-span-2 panel rounded-2xl border border-line bg-surface shadow-card p-5 sm:p-6">
+            <p class="card-label mb-4">Pipeline preview</p>
             <ol class="pipeline-preview" id="pipeline-preview" aria-label="Market Report pipeline steps"></ol>
           </aside>
         </div>
       </section>
 
+      <!-- Pipeline Execution -->
       <section class="pipeline-section" aria-labelledby="pipeline-title">
-        <div class="section-head">
+        <div class="section-head flex flex-wrap items-end justify-between gap-4 mb-5">
           <div>
-            <h2 id="pipeline-title" class="section-title">Skill execution pipeline</h2>
-            <p class="section-desc">Each step maps to a live CMC MCP tool call.</p>
+            <h2 id="pipeline-title" class="section-title font-serif text-xl font-semibold text-ink">Skill execution pipeline</h2>
+            <p class="section-desc text-sm text-muted mt-1">Each step maps to a live CMC MCP tool call.</p>
           </div>
-          <span class="section-sub mono" id="pipeline-status">Ready</span>
+          <div class="pipeline-status-wrap">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-muted">Status</span>
+            <span class="section-sub mono pipeline-status-badge" id="pipeline-status">Ready</span>
+          </div>
         </div>
         <div class="pipeline" id="steps"></div>
       </section>
 
-      <section id="results" class="hidden results" aria-live="polite">
-        <div class="section-head">
+      <!-- Report Results -->
+      <section id="results" class="hidden results space-y-8" aria-live="polite">
+
+        <!-- Header -->
+        <div class="section-head flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h2 class="section-title" id="results-title">Market snapshot</h2>
-            <p class="section-desc">Structured output from the active skill run.</p>
+            <p class="text-[10px] font-mono uppercase tracking-[0.12em] text-gold mb-1">Rapport généré</p>
+            <h2 class="section-title font-serif text-2xl font-semibold text-ink" id="results-title">Market snapshot</h2>
+            <p class="section-desc text-sm text-muted mt-1">Structured output from the active skill run.</p>
           </div>
-          <span class="section-sub mono" id="timestamp"></span>
+          <span class="section-sub mono timestamp-badge" id="timestamp"></span>
         </div>
 
-        <div class="metrics-grid" id="metrics" data-section="metrics">
-          <div class="section-empty">Run the skill to load market metrics.</div>
+        <!-- 1. Key Metrics -->
+        <div class="report-block">
+          <h3 class="report-block-title">Métriques clés</h3>
+          <div class="metrics-grid" id="metrics" data-section="metrics">
+            <div class="section-empty">Run the skill to load market metrics.</div>
+          </div>
+          <p class="section-error hidden" id="err-metrics" role="alert"></p>
         </div>
-        <p class="section-error hidden" id="err-metrics" role="alert"></p>
 
+        <!-- Charts -->
         <div class="charts-row" id="charts-row">
           <div class="chart-card panel" data-section="fng">
             <p class="card-label">Fear &amp; Greed index</p>
@@ -141,76 +192,130 @@
           </div>
         </div>
 
-        <div class="report-panel panel">
-          <div class="section-head compact">
-            <h3 class="subsection-title">Structured report output</h3>
-            <div class="panel-actions">
-              <button type="button" class="btn-ghost" id="copy-report-btn">⧉ Copy report</button>
-              <span class="live-badge"><span class="live-dot" aria-hidden="true"></span> Live</span>
+        <!-- 2. Trader Read (Bias & Sentiment) -->
+        <div class="report-block">
+          <h3 class="report-block-title">Sentiment &amp; Bias</h3>
+          <div class="trader-read-panel panel panel-accent" id="trader-read-panel">
+            <div class="section-head compact flex items-center justify-between mb-4">
+              <h3 class="subsection-title font-serif text-lg font-semibold">Trader read</h3>
+              <span class="signal-badge">AI signal</span>
             </div>
-          </div>
-          <ul class="report-list" id="report-list">
-            <li class="section-empty inline">Report rows will appear here.</li>
-          </ul>
-          <p class="section-error hidden" id="err-report" role="alert"></p>
-        </div>
-
-        <div class="trader-read-panel panel panel-accent" id="trader-read-panel">
-          <div class="section-head compact">
-            <h3 class="subsection-title">Trader read</h3>
-            <span class="signal-badge">AI signal</span>
-          </div>
-          <div class="trader-read-grid">
-            <div class="tr-row">
-              <span class="tr-label">Bias</span>
-              <span class="tr-value" id="tr-bias">—</span>
-            </div>
-            <div class="tr-row">
-              <span class="tr-label">Sentiment</span>
-              <span class="tr-value" id="tr-sentiment">—</span>
-            </div>
-            <div class="tr-row">
-              <span class="tr-label">Leverage</span>
-              <span class="tr-value" id="tr-leverage">—</span>
-            </div>
-            <div class="tr-row">
-              <span class="tr-label">Whale</span>
-              <span class="tr-value" id="tr-whale">—</span>
-            </div>
-            <div class="tr-row tr-row-setup">
-              <span class="tr-label">Setup</span>
-              <span class="tr-value tr-setup" id="tr-setup">—</span>
+            <div class="trader-read-grid">
+              <div class="tr-row tr-row-highlight">
+                <span class="tr-label">Bias</span>
+                <span class="tr-value" id="tr-bias">—</span>
+              </div>
+              <div class="tr-row tr-row-highlight">
+                <span class="tr-label">Sentiment</span>
+                <span class="tr-value" id="tr-sentiment">—</span>
+              </div>
+              <div class="tr-row">
+                <span class="tr-label">Leverage</span>
+                <span class="tr-value" id="tr-leverage">—</span>
+              </div>
+              <div class="tr-row">
+                <span class="tr-label">Whale</span>
+                <span class="tr-value" id="tr-whale">—</span>
+              </div>
+              <div class="tr-row tr-row-setup col-span-full">
+                <span class="tr-label">Setup</span>
+                <span class="tr-value tr-setup" id="tr-setup">—</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="narratives-panel panel">
-          <div class="section-head compact">
-            <h3 class="subsection-title" id="narratives-title">Trending narratives</h3>
+        <!-- 3. Structured Report -->
+        <div class="report-block">
+          <h3 class="report-block-title">Technicals &amp; données structurées</h3>
+          <div class="report-panel panel">
+            <div class="section-head compact flex items-center justify-between mb-4">
+              <h3 class="subsection-title font-serif text-lg font-semibold">Structured report output</h3>
+              <div class="panel-actions flex items-center gap-3">
+                <button type="button" class="btn-ghost" id="copy-report-btn">⧉ Copy report</button>
+                <span class="live-badge"><span class="live-dot" aria-hidden="true"></span> Live</span>
+              </div>
+            </div>
+            <ul class="report-list" id="report-list">
+              <li class="section-empty inline">Report rows will appear here.</li>
+            </ul>
+            <p class="section-error hidden" id="err-report" role="alert"></p>
           </div>
-          <div class="narrative-grid" id="narratives">
-            <div class="section-empty inline">Narrative cards will appear here.</div>
-          </div>
-          <p class="section-error hidden" id="err-narratives" role="alert"></p>
         </div>
+
+        <!-- 4. Trending Narratives -->
+        <div class="report-block">
+          <h3 class="report-block-title" id="narratives-title">Trending narratives</h3>
+          <div class="narratives-panel panel">
+            <div class="narrative-grid" id="narratives">
+              <div class="section-empty inline">Narrative cards will appear here.</div>
+            </div>
+            <p class="section-error hidden" id="err-narratives" role="alert"></p>
+          </div>
+        </div>
+
+        <!-- 5. Mon Analyse -->
+        <div class="report-block">
+          <h3 class="report-block-title">Mon analyse</h3>
+          <div class="analysis-panel panel">
+            <p class="text-sm text-muted mb-4">Ajoutez vos notes personnelles sur ce rapport. Sauvegardées automatiquement dans votre navigateur.</p>
+            <label for="user-analysis" class="sr-only">Mon analyse personnelle</label>
+            <textarea
+              id="user-analysis"
+              class="analysis-textarea"
+              rows="5"
+              placeholder="Ex. : Je reste prudent sur les alts, BTC hold au-dessus du support clé. Rotation possible si dominance baisse sous 54%…"
+            ></textarea>
+            <div class="flex items-center justify-between mt-3">
+              <span id="analysis-save-hint" class="text-xs font-mono text-muted">Prêt</span>
+              <button type="button" id="analysis-clear-btn" class="btn-ghost text-xs">Effacer</button>
+            </div>
+          </div>
+        </div>
+
       </section>
     </main>
 
-    <aside class="competition-aside" aria-label="Competition note">
-      <span class="mono">#CMCAgentHub</span> — Capture this page after Run to show skill output, MCP tools and structured report.
+    <aside class="competition-aside text-center text-xs text-muted py-6 border-t border-line mt-10" aria-label="Competition note">
+      <span class="mono text-gold">#CMCAgentHub</span> — Capture this page after Run to show skill output, MCP tools and structured report.
     </aside>
 
-    <footer class="footer">
-      <a href="https://coinmarketcap.com/api/agent/">CMC Agent Hub</a>
-      <span aria-hidden="true">·</span>
-      <a href="https://coinmarketcap.com/api/skills-marketplace/">market-report skill</a>
-      <span aria-hidden="true">·</span>
+    <footer class="footer text-center text-sm text-muted pb-8">
+      <a href="https://coinmarketcap.com/api/agent/" class="footer-link">CMC Agent Hub</a>
+      <span aria-hidden="true" class="mx-2">·</span>
+      <a href="https://coinmarketcap.com/api/skills-marketplace/" class="footer-link">market-report skill</a>
+      <span aria-hidden="true" class="mx-2">·</span>
       <span class="mono" id="footer-time"></span>
     </footer>
   </div>
 
   <a href="https://deerflow.tech" target="_blank" rel="noopener" class="deerflow-badge" title="Created with Deerflow" aria-label="Created with Deerflow">✦</a>
 
+  <script>
+    (function () {
+      const KEY = 'cmc-hub-user-analysis';
+      const ta = document.getElementById('user-analysis');
+      const hint = document.getElementById('analysis-save-hint');
+      const clearBtn = document.getElementById('analysis-clear-btn');
+      if (!ta) return;
+      const saved = localStorage.getItem(KEY);
+      if (saved) ta.value = saved;
+      let timer;
+      ta.addEventListener('input', () => {
+        clearTimeout(timer);
+        hint.textContent = 'Sauvegarde…';
+        timer = setTimeout(() => {
+          localStorage.setItem(KEY, ta.value);
+          hint.textContent = 'Sauvegardé localement';
+        }, 400);
+      });
+      clearBtn?.addEventListener('click', () => {
+        ta.value = '';
+        localStorage.removeItem(KEY);
+        hint.textContent = 'Effacé';
+      });
+    })();
+  </script>
   <script src="/app.js"></script>
 </body>
 </html>
